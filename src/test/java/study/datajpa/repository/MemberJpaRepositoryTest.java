@@ -65,4 +65,37 @@ class MemberJpaRepositoryTest {
         member1.changeUsername("member!!!");
     }
 
+    @Test
+    @Transactional
+    public void paging() {
+        memberJpaRepository.save(new Member("member1", 10));
+        memberJpaRepository.save(new Member("member2", 10));
+        memberJpaRepository.save(new Member("member3", 10));
+        memberJpaRepository.save(new Member("member4", 10));
+        memberJpaRepository.save(new Member("member5", 10));
+
+        int age = 10;
+        int offset = 0;
+        int limit = 3;
+        List<Member> byPage = memberJpaRepository.findByPage(age, offset, limit);
+        long tcount = memberJpaRepository.totalCount(age);
+        assertThat(byPage.size()).isEqualTo(3);
+        assertThat(tcount).isEqualTo(5);
+    }
+
+    @Test
+    @Transactional
+    public void bulkUpdate() {
+        memberJpaRepository.save(new Member("member1", 10));
+        memberJpaRepository.save(new Member("member2", 20));
+        memberJpaRepository.save(new Member("member3", 30));
+        memberJpaRepository.save(new Member("member4", 40));
+        memberJpaRepository.save(new Member("member5", 10));
+
+        int age = 20;
+        int i = memberJpaRepository.bulkAgePlus(age);
+
+        assertThat(i).isEqualTo(3);
+        List<Member> result = memberJpaRepository.findAll();
+    }
 }
