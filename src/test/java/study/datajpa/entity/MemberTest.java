@@ -1,9 +1,11 @@
 package study.datajpa.entity;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -20,6 +22,8 @@ class MemberTest {
     @PersistenceContext
     EntityManager em;
 
+    @Autowired
+    MemberRepository memberRepository;
     @Test
     public void testEntity() {
         Team teamA = new Team("TeamA");
@@ -49,5 +53,22 @@ class MemberTest {
         }
     }
 
+    @Test
+    public void JpaEventBaseEntity() throws Exception {
+        Member member = new Member("member1");
+        memberRepository.save(member); //@PrePersist
 
+        Thread.sleep(100);
+        member.changeUsername("member2");
+
+        em.flush();
+        em.clear();
+
+        Member findMember = memberRepository.findById(member.getId()).get();
+
+        System.out.println("findMember = " + findMember.getCreateDate());
+        System.out.println("findMember = " + findMember.getUpdatedDate());
+        System.out.println("findMember = " + findMember.getCreateBy());
+        System.out.println("findMember = " + findMember.getUpdatedBy());
+    }
 }

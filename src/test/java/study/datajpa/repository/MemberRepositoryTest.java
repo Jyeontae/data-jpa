@@ -89,8 +89,6 @@ class MemberRepositoryTest {
 
         int age = 10;
         PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
-
-
         Page<Member> page = memberRepository.findByAge(age, pageRequest);
 
         //엔티티 노출을 방지하기 위해 .mpa메소드로 바꿔주는 모습.
@@ -150,5 +148,14 @@ class MemberRepositoryTest {
         em.clear();
 
         List<Member> member11 = memberRepository.findLockByUsername("member1");
+    }
+
+    @Test
+    @Transactional
+    public void custom() {
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        List<Member> resultMember = memberRepository.findMemberCustom();
+        System.out.println("resultMember = " + resultMember.get(0));
     }
 }
